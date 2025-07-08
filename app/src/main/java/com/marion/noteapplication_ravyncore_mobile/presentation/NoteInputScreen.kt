@@ -1,5 +1,6 @@
 package com.marion.noteapplication_ravyncore_mobile.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,30 +29,39 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.marion.noteapplication_ravyncore_mobile.data.Note
+import com.marion.noteapplication_ravyncore_mobile.presentation.viewmodel.NoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteInputScreen(
-    onSaveNote: () -> Unit,
-    navController: NavController
+    navController: NavController,
+    noteViewModel: NoteViewModel,
+    navigateBack: () -> Unit
 ) {
 
+    val context = LocalContext.current
     var noteText by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    val titleFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
     ScaffoldUtil(
         navController = navController,
         isNavIconVisible = true,
+        isAddButtonVisible = false,
         title = "New Note",
         content = { scaffoldPadding ->
             Column(
@@ -61,6 +71,45 @@ fun NoteInputScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { newValue ->
+                        title = newValue
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .focusRequester(titleFocusRequester)
+                        .fillMaxWidth(0.85f)
+                        .wrapContentHeight(),
+                    textStyle = TextStyle(
+                        fontSize = 19.sp,
+                        color = Black,
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    label = {
+                        Text(
+                            text = "Title",
+                            fontSize = 19.sp
+                        )
+                    },
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusRequester.requestFocus()
+                        }
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = Black
+                    )
+                )
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
                     value = noteText,
@@ -99,6 +148,8 @@ fun NoteInputScreen(
                         cursorColor = Black
                     )
                 )
+
+
                 Spacer(Modifier.height(50.dp))
                 Box(
                     Modifier
@@ -109,7 +160,13 @@ fun NoteInputScreen(
                 ) {
                     Button(
                         onClick = {
-                            onSaveNote()
+                            val note = Note(title = title, note = noteText)
+                            if (title.isNotEmpty() and noteText.isNotEmpty()) {
+                                noteViewModel.addNote(note)
+                                navigateBack()
+                                Toast.makeText(context, "Note saved", Toast.LENGTH_SHORT).show()
+                            } else
+                                Toast.makeText(context, "Add a note", Toast.LENGTH_SHORT).show()
                         },
                         modifier = Modifier.defaultMinSize(minHeight = 55.dp)
                     ) {

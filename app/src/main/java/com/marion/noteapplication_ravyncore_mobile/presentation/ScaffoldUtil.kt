@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -14,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -23,6 +26,7 @@ import androidx.navigation.NavController
 fun ScaffoldUtil(
     navController: NavController,
     isNavIconVisible: Boolean,
+    isAddButtonVisible: Boolean,
     title: String,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -51,6 +55,23 @@ fun ScaffoldUtil(
                     else {
                         Unit
                     }
+                },
+                actions = {
+                    if (isAddButtonVisible) {
+                        Button(
+                            onClick = {
+                                navController.navigate(route = "AddNoteScreen")
+                            },
+                        ) {
+                            Text(text = "Add note")
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = White
+                            )
+                        }
+                    } else Unit
                 }
             )
         }

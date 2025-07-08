@@ -1,4 +1,4 @@
-package com.marion.noteapplication_ravyncore_mobile.domain.repository
+package com.marion.noteapplication_ravyncore_mobile.domain
 
 import com.marion.noteapplication_ravyncore_mobile.data.Note
 import kotlinx.coroutines.flow.Flow

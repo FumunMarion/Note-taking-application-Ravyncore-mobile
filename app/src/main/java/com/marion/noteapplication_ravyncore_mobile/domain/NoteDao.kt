@@ -1,4 +1,4 @@
-package com.marion.noteapplication_ravyncore_mobile.domain.room
+package com.marion.noteapplication_ravyncore_mobile.domain
 
 import androidx.room.Dao
 import androidx.room.Insert
